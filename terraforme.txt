@@ -1,0 +1,22 @@
+provider "docker" {
+  host = "unix:///var/run/docker.sock"
+}
+
+data "docker_registry_image" "httpd" {
+  name = "httpd:latest"
+}
+
+resource "docker_image" "image" {
+  name          = data.docker_registry_image.httpd.name
+  keep_locally  = false
+}
+
+resource "docker_container" "container" {
+  name  = "httpd_container"
+  image = docker_image.image.latest
+  ports {
+    internal = 80
+    external = 8080
+  }
+}
+
